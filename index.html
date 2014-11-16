@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Wine by findyourmagic</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Wine</h1>
+        <p class="header"></p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/findyourmagic/wine/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/findyourmagic/wine/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/findyourmagic/wine">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/findyourmagic">findyourmagic</a></p>
+
+
+      </header>
+      <section>
+        <h3>
+<a id="wine" class="anchor" href="#wine" aria-hidden="true"><span class="octicon octicon-link"></span></a>Wine</h3>
+
+<ul>
+<li><p>var todo = $('.todo').wine(function() {  }) // wine函数内为init函数,请注意函数内this为Wine对象,jQuery对象可以通过this.parent获得</p></li>
+<li><p>setTemplate({ text : 'ejs模版内容' , url : 'ejs模版路径'}) // 设置EJS模版路径或者模版内容，优先选择text</p></li>
+<li><p>value(data) // 给Wine对象赋值</p></li>
+<li><p>beforeValue(fn) // 赋值前执行fn</p></li>
+<li><p>afterValue(fn) // 渲染后执行fn</p></li>
+<li><p>render() // 对Wine对象渲染</p></li>
+<li><p>beforeRender(fn) // 渲染前执行fn</p></li>
+<li><p>afterRender(fn) // 渲染后执行fn</p></li>
+<li><p>binding({ attribute_name : binding_function({ $obj : 'wine-bind表单对象' , old : 'change之前的值' , value : '当前值' , path : 'Wine对象访问该属性的路径array'}  ) }) // 给Wine-bind表单元素绑定事件，其中this为当前wine对象</p></li>
+<li><p>unbinding( str|array ) // 给Wine-bind表单元素解绑，参数为字符串或者数组</p></li>
+<li><p>watch({ event_name:event_function }) // 订阅事件 可以watch'*'，目前只支持该通配符</p></li>
+<li><p>detach([event , event]) // 取消订阅</p></li>
+</ul>
+
+<h3>
+<a id="工具函数" class="anchor" href="#%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0" aria-hidden="true"><span class="octicon octicon-link"></span></a>工具函数</h3>
+
+<ul>
+<li><p>$.Wine.extend(obj, jquery_selector) // 继承</p></li>
+<li><p>$.Wine.trigger(event, data) // 触发订阅的事件</p></li>
+</ul>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
