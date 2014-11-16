@@ -1,0 +1,1 @@
+(function(){define(function(e){var t,n,l;return t=e("jQuery"),l=e("cozy"),n=l(".helloWine").setup({hello:"",select:1,list:[1,2,3,4]}).events({"change input":function(){return n.render()}}).template(t("#firstTemplate").html()).render()})}).call(this);
