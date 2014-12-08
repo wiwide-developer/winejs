@@ -32,9 +32,12 @@ getAttrKey = (str) ->
     _arr.join '.'
 
 # 根据type获取表单项的值
-getElementVal = ($obj) ->
-    if $obj[0].nodeName.toLowerCase() == 'input' && ($obj.attr('type') == 'checkbox' || $obj.attr('type') == 'radio')
+getElementVal = ($obj, $div) ->
+    if $obj.attr('type') == 'checkbox'
         $obj.prop 'checked'
+    else if $obj.attr('type') == 'radio'
+        _name = $obj.attr('name')
+        $div.find(':radio:checked[name=' + _name + ']').val()
     else
         $obj.val()
 
@@ -48,7 +51,7 @@ uploadElementVal = (scope, $obj, str) ->
                 _data = _data[v]
             else
                 _old = _data[v]
-                _data[v] = getElementVal($obj)
+                _data[v] = getElementVal($obj, scope.parent)
 
                 # 调用bindAction绑定的函数
                 if scope.actions[getAttrKey str]
@@ -92,7 +95,7 @@ valueBind = ($div, data) ->
             $this.val _val
         else if $this[0].nodeName.toLowerCase() == 'input' && ($this.attr('type') == 'checkbox')
             $this.prop 'checked',_val
-        else if $this.attr('type') == 'radio'
+        else if $this[0].nodeName.toLowerCase() == 'input' && $this.attr('type') == 'radio'
             _name = $this.attr('name')
             $div.find(':radio[name=' + _name + '][value=' + _val + ']').prop 'checked',_val
         else
@@ -116,7 +119,10 @@ class Wine
         self = @
         @parent.on('change','[wine-bind]',() ->
             $this = $ @
-            uploadElementVal self,$this,$this.attr('wine-bind')
+            if $this.attr('type') == 'radio' && !$this.prop('checked')
+                return
+            else
+                uploadElementVal self,$this,$this.attr('wine-bind')
         )
     
     # 模版设置

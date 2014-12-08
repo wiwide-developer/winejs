@@ -49,9 +49,13 @@ Daniel.Liu
     return _arr.join('.');
   };
 
-  getElementVal = function($obj) {
-    if ($obj[0].nodeName.toLowerCase() === 'input' && ($obj.attr('type') === 'checkbox' || $obj.attr('type') === 'radio')) {
+  getElementVal = function($obj, $div) {
+    var _name;
+    if ($obj.attr('type') === 'checkbox') {
       return $obj.prop('checked');
+    } else if ($obj.attr('type') === 'radio') {
+      _name = $obj.attr('name');
+      return $div.find(':radio:checked[name=' + _name + ']').val();
     } else {
       return $obj.val();
     }
@@ -69,7 +73,7 @@ Daniel.Liu
           _results.push(_data = _data[v]);
         } else {
           _old = _data[v];
-          _data[v] = getElementVal($obj);
+          _data[v] = getElementVal($obj, scope.parent);
           if (scope.actions[getAttrKey(str)]) {
             _results.push(scope.actions[getAttrKey(str)].call(scope, {
               $obj: $obj,
@@ -136,7 +140,7 @@ Daniel.Liu
         return $this.val(_val);
       } else if ($this[0].nodeName.toLowerCase() === 'input' && ($this.attr('type') === 'checkbox')) {
         return $this.prop('checked', _val);
-      } else if ($this.attr('type') === 'radio') {
+      } else if ($this[0].nodeName.toLowerCase() === 'input' && $this.attr('type') === 'radio') {
         _name = $this.attr('name');
         return $div.find(':radio[name=' + _name + '][value=' + _val + ']').prop('checked', _val);
       } else {
@@ -164,7 +168,11 @@ Daniel.Liu
       this.parent.on('change', '[wine-bind]', function() {
         var $this;
         $this = $(this);
-        return uploadElementVal(self, $this, $this.attr('wine-bind'));
+        if ($this.attr('type') === 'radio' && !$this.prop('checked')) {
+
+        } else {
+          return uploadElementVal(self, $this, $this.attr('wine-bind'));
+        }
       });
     }
 
