@@ -1,6 +1,6 @@
 
 /*
-Wine 0.0.3
+Wine 0.0.8
 Daniel.Liu
  */
 
@@ -129,13 +129,16 @@ Daniel.Liu
 
   valueBind = function($div, data) {
     return $div.find('[wine-bind]').each(function() {
-      var $this, _val;
+      var $this, _name, _val;
       $this = $(this);
       _val = getBindingData($this, data);
       if ($this[0].nodeName.toLowerCase() === 'select') {
         return $this.val(_val);
-      } else if ($this[0].nodeName.toLowerCase() === 'input' && ($this.attr('type') === 'checkbox' || $this.attr('type') === 'radio')) {
+      } else if ($this[0].nodeName.toLowerCase() === 'input' && ($this.attr('type') === 'checkbox')) {
         return $this.prop('checked', _val);
+      } else if ($this.attr('type') === 'radio') {
+        _name = $this.attr('name');
+        return $div.find(':radio[name=' + _name + '][value=' + _val + ']').prop('checked', _val);
       } else {
         return $this.val(_val);
       }

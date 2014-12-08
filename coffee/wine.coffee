@@ -1,5 +1,5 @@
 ###
-Wine 0.0.3
+Wine 0.0.8
 Daniel.Liu
 ###
 
@@ -90,8 +90,11 @@ valueBind = ($div, data) ->
         _val = getBindingData $this,data
         if $this[0].nodeName.toLowerCase() == 'select'
             $this.val _val
-        else if $this[0].nodeName.toLowerCase() == 'input' && ($this.attr('type') == 'checkbox' || $this.attr('type') == 'radio')
+        else if $this[0].nodeName.toLowerCase() == 'input' && ($this.attr('type') == 'checkbox')
             $this.prop 'checked',_val
+        else if $this.attr('type') == 'radio'
+            _name = $this.attr('name')
+            $div.find(':radio[name=' + _name + '][value=' + _val + ']').prop 'checked',_val
         else
             $this.val(_val)
     )

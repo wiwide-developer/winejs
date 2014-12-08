@@ -1,7 +1,7 @@
 {
-  "name": "Cozy",
-  "version": "0.0.1",
-  "description": "MVVM framework base on jQuery.",
+  "name": "Wine",
+  "version": "0.0.8",
+  "description": "A user interface libary base on jQuery.",
   "main": "index.js",
   "directories": {
     "example": "examples"
@@ -14,7 +14,7 @@
     "url": "https://git.oschina.net/douzhi/cozy.git"
   },
   "keywords": [
-    "MVVM",
+    "ui",
     "jQuery"
   ],
   "author": "Daniel",

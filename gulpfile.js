@@ -9,7 +9,7 @@ var paths = {
   coffee: './coffee/*.coffee'
 };
 
-gulp.task('cozy', function() {
+gulp.task('wine', function() {
   // Minify and copy all JavaScript (except vendor coffee)
   return gulp.src(paths.coffee)
     .pipe(coffee())
@@ -20,8 +20,8 @@ gulp.task('cozy', function() {
 
 // Rerun the task when a file changes
 gulp.task('watch', function() {
-  gulp.watch(paths.coffee, ['cozy']);
+  gulp.watch(paths.coffee, ['wine']);
 });
 
 // The default task (called when you run `gulp` from cli)
-gulp.task('default', ['cozy', 'watch']);
+gulp.task('default', ['wine', 'watch']);
