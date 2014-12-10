@@ -5,7 +5,7 @@ Daniel.Liu
  */
 
 (function() {
-  var Wine, contrast, getAttrKey, getBindingData, getElementVal, resolveAttr, singleValidate, uploadElementVal, valueBind;
+  var Wine, changeBind, contrast, getAttrKey, getBindingData, getElementVal, resolveAttr, singleValidate, uploadElementVal, valueBind;
 
   contrast = function(data, memorize) {
     var i, k, v, _i, _len;
@@ -149,9 +149,22 @@ Daniel.Liu
     });
   };
 
+  changeBind = function() {
+    var self;
+    self = this;
+    return this.parent.off('change').on('change', '[wine-bind]', function() {
+      var $this;
+      $this = $(this);
+      if ($this.attr('type') === 'radio' && !$this.prop('checked')) {
+
+      } else {
+        return uploadElementVal(self, $this, $this.attr('wine-bind'));
+      }
+    });
+  };
+
   Wine = (function() {
     function Wine(parent, initialize) {
-      var self;
       this.parent = parent;
       this.initialize = initialize;
       this.data = null;
@@ -164,16 +177,7 @@ Daniel.Liu
       this.validateRules = {};
       this.bindElements = {};
       this.initialized = false;
-      self = this;
-      this.parent.on('change', '[wine-bind]', function() {
-        var $this;
-        $this = $(this);
-        if ($this.attr('type') === 'radio' && !$this.prop('checked')) {
-
-        } else {
-          return uploadElementVal(self, $this, $this.attr('wine-bind'));
-        }
-      });
+      changeBind.call(this);
     }
 
     Wine.prototype.setTemplate = function(option) {
@@ -380,7 +384,7 @@ Daniel.Liu
     extend: function(wine, parent) {
       var k, v, _ref, _subscribers, _wine;
       _subscribers = this.subscribers;
-      _wine = $.extend({}, wine);
+      _wine = $.extend(true, {}, wine);
       _wine.parent = $(parent);
       _ref = wine.watches;
       for (k in _ref) {
@@ -390,6 +394,7 @@ Daniel.Liu
           _subscribers[k].push(_wine);
         }
       }
+      changeBind.call(_wine);
       return _wine;
     },
     subscribe: function(obj, event) {

@@ -102,6 +102,17 @@ valueBind = ($div, data) ->
             $this.val(_val)
     )
 
+# 在构造函数中监听wine-bind元素change事件
+changeBind = () ->
+    self = @
+    @parent.off('change').on('change','[wine-bind]',() ->
+        $this = $ @
+        if $this.attr('type') == 'radio' && !$this.prop('checked')
+            return
+        else
+            uploadElementVal self,$this,$this.attr('wine-bind')
+    )
+
 class Wine
 
     # 构造函数
@@ -116,14 +127,7 @@ class Wine
         @validateRules = {}
         @bindElements = {}
         @initialized = false
-        self = @
-        @parent.on('change','[wine-bind]',() ->
-            $this = $ @
-            if $this.attr('type') == 'radio' && !$this.prop('checked')
-                return
-            else
-                uploadElementVal self,$this,$this.attr('wine-bind')
-        )
+        changeBind.call @
     
     # 模版设置
     setTemplate: (option) ->
@@ -280,12 +284,13 @@ jQuery.Wine = {
 
     extend : (wine, parent) ->
         _subscribers = @subscribers
-        _wine = $.extend({}, wine)
+        _wine = $.extend(true, {}, wine)
         _wine.parent = $(parent)
         for k,v of wine.watches
             if v = true && _subscribers[k] && _subscribers[k].length
                 _wine.watches[k] = true
                 _subscribers[k].push _wine
+        changeBind.call _wine
         _wine
 
     subscribe : (obj, event) ->
