@@ -1,5 +1,9 @@
 <ul class="nav">
     <% for (var i = 0, len = items.length; i < len; i ++ ) { %>
-        <li><a href="./<%= items[i].file.replace('.md','.html') %>"><%= items[i].name %></a></li>
+    	<% if (items[i].file) { %>
+        	<li><a href="<%= items[i].file.replace('.md','.html') %>"><%= items[i].name %></a></li>
+        <% } else if (items[i].link) { %>
+        	<li><a href="<%= items[i].link %>" target="_blank"><%= items[i].name %></a></li>
+        <% } %>
     <% } %>
 </ul>
