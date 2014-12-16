@@ -19,13 +19,13 @@ contrast = (data, memorize) ->
     true
 
 # 解析wine-bind的属性 eg: 'data.a[0].b' -> ['data', 'a', '0', 'b'] 
-resolveAttr = (str) ->
+getBindArr = (str) ->
     regAttr = /[^\.\[\]]+/g
     str.match regAttr
 
 # 解析wine-bind的属性
-getAttrKey = (str) ->
-    _arr = resolveAttr str
+getBindStr = (str) ->
+    _arr = getBindArr str
     for v,i in _arr
         if /[0-9]\d*/.test v
             _arr[i] = '$'
@@ -42,8 +42,8 @@ getElementVal = ($obj, $div) ->
         $obj.val()
 
 # 从添加wine-bind的表单项把数据同步到viewModel
-uploadElementVal = (scope, $obj, str) ->
-    _arr = resolveAttr str
+syncViewModel = (scope, $obj, str) ->
+    _arr = getBindArr str
     _data = scope.data
     if _arr.length
         for v,i in _arr
@@ -52,14 +52,18 @@ uploadElementVal = (scope, $obj, str) ->
             else
                 _old = _data[v]
                 _data[v] = getElementVal($obj, scope.parent)
+                _name = getBindStr str
+                # 调用validate actions
+                if scope.validateActions[_name]
+                    scope.validateActions[_name].call scope,_name
 
                 # 调用bindAction绑定的函数
-                if scope.actions[getAttrKey str]
-                    scope.actions[getAttrKey str].call scope,{ $obj : $obj , old : _old , value : _data[v] , path : _arr }
+                if scope.actions[_name]
+                    scope.actions[_name].call scope,{ $obj : $obj , old : _old , value : _data[v] , path : _arr }
 
 # 取得指定属性viewModel数据
-getBindingData = ($obj, data) ->
-    _arr = resolveAttr $obj.attr 'wine-bind'
+getBindData = ($obj, data) ->
+    _arr = getBindArr $obj.attr 'wine-bind'
     if _arr.length
         _data = data
         for v,i in _arr
@@ -67,13 +71,13 @@ getBindingData = ($obj, data) ->
         _data
 
 # 根据path单条验证
-singleValidate = (k, v, data, context, elements) ->
+validateSingle = (k, v, data, context, elements) ->
     _data = data
     if (k.indexOf('$') >= 0)
         _k = k.replace(/\$/g,'\\d+').replace(/\./g,'\\.')
         _reg = new RegExp(_k)
         for item,key in elements
-            if _reg.test(key) && !singleValidate(key, v, data, context, item)
+            if _reg.test(key) && !validateSingle(key, v, data, context, item)
                 return false
         return true
     else
@@ -87,10 +91,10 @@ singleValidate = (k, v, data, context, elements) ->
         return true
 
 # 给绑定的表单赋值
-valueBind = ($div, data) ->
+valueBindElements = ($div, data) ->
     $div.find('[wine-bind]').each(() ->
         $this = $(@)
-        _val = getBindingData $this,data
+        _val = getBindData $this,data
         if $this[0].nodeName.toLowerCase() == 'select'
             $this.val _val
         else if $this[0].nodeName.toLowerCase() == 'input' && ($this.attr('type') == 'checkbox')
@@ -110,7 +114,7 @@ changeBind = () ->
         if $this.attr('type') == 'radio' && !$this.prop('checked')
             return
         else
-            uploadElementVal self,$this,$this.attr('wine-bind')
+            syncViewModel self,$this,$this.attr('wine-bind')
     )
 
 class Wine
@@ -122,6 +126,7 @@ class Wine
         @template = null
         @memorize = null
         @actions = {}
+        @validateActions = {}
         @events = {}
         @watches = {}
         @validateRules = {}
@@ -140,33 +145,38 @@ class Wine
     # 验证规则设置 {name:'tag name', rule:/\d/, checked:false, success:fn, fail:fn}
     setValidate: (option) ->
         _rules = @validateRules
+        _validates = @validateActions
         for i,k in option
-            _rules[resolveAttr(i.name).join('.')] = {
+            _name = getBindArr(i.name).join('.')
+            _rules[_name] = {
                 rule : i.rule
                 success : i.success
                 fail : i.fail
-            } 
+            }
+            if i.auto
+                _validates[_name] = (name) ->
+                    @validate(name)
         @
 
     # 验证
-    validate:(option) ->
+    validate: (option) ->
         self = @
         _rules = @validateRules
         _data = @data
         _elements = self.bindElements
         if !option
             for k,v of _rules
-                if !singleValidate(k, v, _data, self, _elements)
+                if !validateSingle(k, v, _data, self, _elements)
                     return false
             return true
         else if $.type(option) == 'string'
-            if !singleValidate(option, _rules[option], _data, self, _elements)
+            if !validateSingle(option, _rules[option], _data, self, _elements)
                 return false
             else
                 return true
         else if $.type(option) == 'array'
             for i in option
-                if !singleValidate(i, _rules[i], _data, self, _elements)
+                if !validateSingle(i, _rules[i], _data, self, _elements)
                     return false
             return true
 
@@ -192,6 +202,22 @@ class Wine
             # ...
         @
 
+    # 表单
+    form: () ->
+        self = @
+        $parent = @parent
+        _elements = self.bindElements
+        if !@initialized
+            @.init()
+            @initialized = true
+        valueBindElements $parent,self.data
+        $parent.find('[wine-bind]').each( () ->
+            $this = $(@)
+            attrName = getBindArr($this.attr('wine-bind')).join('.')
+            _elements[attrName] = $this
+        )
+        @
+
     # 渲染
     render: () ->
         self = @
@@ -206,12 +232,12 @@ class Wine
         # 渲染之前先给wine-bind元素赋值
         $div = $('<div></div>')
         $div.html @template.render @data
-        valueBind $div,self.data
+        valueBindElements $div,self.data
         @parent.empty().append $div.children()        
         _elements = self.bindElements = {}
         @parent.find('[wine-bind]').each( () ->
             $this = $(@)
-            attrName = resolveAttr($this.attr('wine-bind')).join('.')
+            attrName = getBindArr($this.attr('wine-bind')).join('.')
             _elements[attrName] = $this
         )
         try
@@ -232,7 +258,7 @@ class Wine
     binding: (obj) ->
         self = @
         for k,v of obj
-            _arr = resolveAttr k
+            _arr = getBindArr k
             self.actions[_arr.join '.'] = v
         @
 
@@ -240,7 +266,7 @@ class Wine
     unbinding: (option) ->
         self = @
         unbind = (str) ->
-            _arr = resolveAttr str
+            _arr = getBindArr str
             self.actions[_arr.join '.'] = null
 
         if $.type option == 'string'

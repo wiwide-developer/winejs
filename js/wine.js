@@ -5,7 +5,7 @@ Daniel.Liu
  */
 
 (function() {
-  var Wine, changeBind, contrast, getAttrKey, getBindingData, getElementVal, resolveAttr, singleValidate, uploadElementVal, valueBind;
+  var Wine, changeBind, contrast, getBindArr, getBindData, getBindStr, getElementVal, syncViewModel, validateSingle, valueBindElements;
 
   contrast = function(data, memorize) {
     var i, k, v, _i, _len;
@@ -31,15 +31,15 @@ Daniel.Liu
     return true;
   };
 
-  resolveAttr = function(str) {
+  getBindArr = function(str) {
     var regAttr;
     regAttr = /[^\.\[\]]+/g;
     return str.match(regAttr);
   };
 
-  getAttrKey = function(str) {
+  getBindStr = function(str) {
     var i, v, _arr, _i, _len;
-    _arr = resolveAttr(str);
+    _arr = getBindArr(str);
     for (i = _i = 0, _len = _arr.length; _i < _len; i = ++_i) {
       v = _arr[i];
       if (/[0-9]\d*/.test(v)) {
@@ -61,9 +61,9 @@ Daniel.Liu
     }
   };
 
-  uploadElementVal = function(scope, $obj, str) {
-    var i, v, _arr, _data, _i, _len, _old, _results;
-    _arr = resolveAttr(str);
+  syncViewModel = function(scope, $obj, str) {
+    var i, v, _arr, _data, _i, _len, _name, _old, _results;
+    _arr = getBindArr(str);
     _data = scope.data;
     if (_arr.length) {
       _results = [];
@@ -74,8 +74,12 @@ Daniel.Liu
         } else {
           _old = _data[v];
           _data[v] = getElementVal($obj, scope.parent);
-          if (scope.actions[getAttrKey(str)]) {
-            _results.push(scope.actions[getAttrKey(str)].call(scope, {
+          _name = getBindStr(str);
+          if (scope.validateActions[_name]) {
+            scope.validateActions[_name].call(scope, _name);
+          }
+          if (scope.actions[_name]) {
+            _results.push(scope.actions[_name].call(scope, {
               $obj: $obj,
               old: _old,
               value: _data[v],
@@ -90,9 +94,9 @@ Daniel.Liu
     }
   };
 
-  getBindingData = function($obj, data) {
+  getBindData = function($obj, data) {
     var i, v, _arr, _data, _i, _len;
-    _arr = resolveAttr($obj.attr('wine-bind'));
+    _arr = getBindArr($obj.attr('wine-bind'));
     if (_arr.length) {
       _data = data;
       for (i = _i = 0, _len = _arr.length; _i < _len; i = ++_i) {
@@ -103,7 +107,7 @@ Daniel.Liu
     }
   };
 
-  singleValidate = function(k, v, data, context, elements) {
+  validateSingle = function(k, v, data, context, elements) {
     var item, key, _arr, _data, _i, _j, _k, _len, _len1, _reg;
     _data = data;
     if (k.indexOf('$') >= 0) {
@@ -111,7 +115,7 @@ Daniel.Liu
       _reg = new RegExp(_k);
       for (key = _i = 0, _len = elements.length; _i < _len; key = ++_i) {
         item = elements[key];
-        if (_reg.test(key) && !singleValidate(key, v, data, context, item)) {
+        if (_reg.test(key) && !validateSingle(key, v, data, context, item)) {
           return false;
         }
       }
@@ -131,11 +135,11 @@ Daniel.Liu
     }
   };
 
-  valueBind = function($div, data) {
+  valueBindElements = function($div, data) {
     return $div.find('[wine-bind]').each(function() {
       var $this, _name, _val;
       $this = $(this);
-      _val = getBindingData($this, data);
+      _val = getBindData($this, data);
       if ($this[0].nodeName.toLowerCase() === 'select') {
         return $this.val(_val);
       } else if ($this[0].nodeName.toLowerCase() === 'input' && ($this.attr('type') === 'checkbox')) {
@@ -158,7 +162,7 @@ Daniel.Liu
       if ($this.attr('type') === 'radio' && !$this.prop('checked')) {
 
       } else {
-        return uploadElementVal(self, $this, $this.attr('wine-bind'));
+        return syncViewModel(self, $this, $this.attr('wine-bind'));
       }
     });
   };
@@ -172,6 +176,7 @@ Daniel.Liu
       this.template = null;
       this.memorize = null;
       this.actions = {};
+      this.validateActions = {};
       this.events = {};
       this.watches = {};
       this.validateRules = {};
@@ -194,15 +199,22 @@ Daniel.Liu
     };
 
     Wine.prototype.setValidate = function(option) {
-      var i, k, _i, _len, _rules;
+      var i, k, _i, _len, _name, _rules, _validates;
       _rules = this.validateRules;
+      _validates = this.validateActions;
       for (k = _i = 0, _len = option.length; _i < _len; k = ++_i) {
         i = option[k];
-        _rules[resolveAttr(i.name).join('.')] = {
+        _name = getBindArr(i.name).join('.');
+        _rules[_name] = {
           rule: i.rule,
           success: i.success,
           fail: i.fail
         };
+        if (i.auto) {
+          _validates[_name] = function(name) {
+            return this.validate(name);
+          };
+        }
       }
       return this;
     };
@@ -216,13 +228,13 @@ Daniel.Liu
       if (!option) {
         for (k in _rules) {
           v = _rules[k];
-          if (!singleValidate(k, v, _data, self, _elements)) {
+          if (!validateSingle(k, v, _data, self, _elements)) {
             return false;
           }
         }
         return true;
       } else if ($.type(option) === 'string') {
-        if (!singleValidate(option, _rules[option], _data, self, _elements)) {
+        if (!validateSingle(option, _rules[option], _data, self, _elements)) {
           return false;
         } else {
           return true;
@@ -230,7 +242,7 @@ Daniel.Liu
       } else if ($.type(option) === 'array') {
         for (_i = 0, _len = option.length; _i < _len; _i++) {
           i = option[_i];
-          if (!singleValidate(i, _rules[i], _data, self, _elements)) {
+          if (!validateSingle(i, _rules[i], _data, self, _elements)) {
             return false;
           }
         }
@@ -266,6 +278,25 @@ Daniel.Liu
       return this;
     };
 
+    Wine.prototype.form = function() {
+      var $parent, self, _elements;
+      self = this;
+      $parent = this.parent;
+      _elements = self.bindElements;
+      if (!this.initialized) {
+        this.init();
+        this.initialized = true;
+      }
+      valueBindElements($parent, self.data);
+      $parent.find('[wine-bind]').each(function() {
+        var $this, attrName;
+        $this = $(this);
+        attrName = getBindArr($this.attr('wine-bind')).join('.');
+        return _elements[attrName] = $this;
+      });
+      return this;
+    };
+
     Wine.prototype.render = function() {
       var $div, e, self, _elements;
       self = this;
@@ -280,13 +311,13 @@ Daniel.Liu
       }
       $div = $('<div></div>');
       $div.html(this.template.render(this.data));
-      valueBind($div, self.data);
+      valueBindElements($div, self.data);
       this.parent.empty().append($div.children());
       _elements = self.bindElements = {};
       this.parent.find('[wine-bind]').each(function() {
         var $this, attrName;
         $this = $(this);
-        attrName = resolveAttr($this.attr('wine-bind')).join('.');
+        attrName = getBindArr($this.attr('wine-bind')).join('.');
         return _elements[attrName] = $this;
       });
       try {
@@ -312,7 +343,7 @@ Daniel.Liu
       self = this;
       for (k in obj) {
         v = obj[k];
-        _arr = resolveAttr(k);
+        _arr = getBindArr(k);
         self.actions[_arr.join('.')] = v;
       }
       return this;
@@ -323,7 +354,7 @@ Daniel.Liu
       self = this;
       unbind = function(str) {
         var _arr;
-        _arr = resolveAttr(str);
+        _arr = getBindArr(str);
         return self.actions[_arr.join('.')] = null;
       };
       if ($.type(option === 'string')) {
