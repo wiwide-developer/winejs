@@ -69,10 +69,23 @@ presenter.afterValue(fn);
 
 ### render()
 
-对Wine对象渲染
+对Wine对象渲染，请勿和form()方法混用
 
 ```javascript
 presenter.render()
+```
+
+### form()
+
+使调用声明函数并给form表单赋值，请勿和render()方法混用
+
+```javascript
+presenter.wine(function(){
+	// init 函数会在第一次调用form表单时执行	
+})
+.value({...}) // 赋值 必需
+.setValidate([...]) // 设置验证规则 选填
+.form();
 ```
 
 ### beforeRender(fn)
@@ -146,6 +159,46 @@ __参数(必选):__
 
 ```javascript
 presenter.unbinding('name');
+```
+
+### setValidate()
+
+设置验证规则
+
+```javascript
+presenter
+.setValidate([
+	{ // 验证规则1
+		name : 'key',
+		rule : /^\d$/,
+		success : function( data, $input ){ // data 为表单元素内当前值，$input为对应当前表单元素的jQuery对象
+			// this 指向当前的wine对象 即当前presenter
+			// 验证成功时执行
+		},
+		fail : function( data, $input ){
+			// 验证失败时执行
+		}
+	},
+	{ // 验证规则2
+		
+	}
+])
+```
+
+### validate()
+
+验证某个属性或者全部属性
+
+```javascript
+// 验证name属性对应的验证规则，验证成功则调用验证规则中success函数并返回true，否则调用fail且返回false
+presenter
+.validate('name');
+```
+
+```javascript
+// 按顺序验证全部验证规则，验证成功则调用验证规则中success函数并返回true，否则调用第一个验证失败的fail函数且返回false
+presenter
+.validate();
 ```
 
 ### watch({eventName:callback})
