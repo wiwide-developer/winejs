@@ -30,23 +30,30 @@
     };
 
     $(function(){
-        $('.J-form').wine(function(){
-            var self = this,
-                $parent = self.parent;
+        // 封装成Wine对象
+        var form = $('.J-form')
+        .wine(function(){
+            // 声明函数在已包含在body中的dom封装成的Presenter中用来绑定事件，在外部插入body的dom用来给父元素绑定事件委托
+            var self = this, // wine 对象
+                $parent = self.parent; // wine对象的父元素即.J-form
+
+            // 提交事件
             $parent.find('button').click(function(){
                 if (!self.validate()) {
+                    // 调用全部验证规则 如果有一项为空则返回
                     return;
                 }
                 alert('login success');
             });
         })
         .setValidate([
+            // 设置验证规则
             {
-                name : 'phone',
-                rule : /^0?(13|15|17|18|14)[0-9]{9}$/,
-                success : right,
-                fail : wrong,
-                auto : true
+                name : 'phone', // 需要验证的属性
+                rule : /^0?(13|15|17|18|14)[0-9]{9}$/, // 验证用正则
+                success : right, // 验证成功执行的函数，已在前面声明
+                fail : wrong, // 验证失败执行的函数，已在前面声明
+                auto : true // 是否自动在表单元素触发change函数时自动验证
             },
             {
                 name : 'password',
@@ -57,6 +64,7 @@
             }
         ])
         .value({
+            // 声明wine对象的值 必须
             name : '',
             password : ''
         })
