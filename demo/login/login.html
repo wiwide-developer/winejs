@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        .error {
+            color: red;
+        }
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="J-form">
+    <p>手机：<input type="text" wine-bind="phone"><span class="J-error error hide">请填写正确的手机号</span></p>
+    <p>密码：<input type="password" wine-bind="password"><span class="J-error error hide">您的密码不正确</span></p>
+    <p><button>登录</button></p>
+</div>
+<script type="text/javascript" src="../../lib/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../lib/ejs.js"></script>
+<script type="text/javascript" src="../../js/wine.js"></script>
+<script type="text/javascript">
+    var right = function(data, $input){
+        $input.next('.J-error').addClass('hide');
+    },
+    wrong = function(data, $input){
+        $input.next('.J-error').removeClass('hide');
+    };
+
+    $(function(){
+        $('.J-form').wine(function(){
+            var self = this,
+                $parent = self.parent;
+            $parent.find('button').click(function(){
+                if (!self.validate()) {
+                    return;
+                }
+                alert('login success');
+            });
+        })
+        .setValidate([
+            {
+                name : 'phone',
+                rule : /^0?(13|15|17|18|14)[0-9]{9}$/,
+                success : right,
+                fail : wrong,
+                auto : true
+            },
+            {
+                name : 'password',
+                rule : /^123456$/,
+                success : right,
+                fail : wrong,
+                auto : true
+            }
+        ])
+        .value({
+            name : '',
+            password : ''
+        })
+        .form();
+    });
+</script>
+</body>
+</html>
