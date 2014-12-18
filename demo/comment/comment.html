@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Comment</title>
+    <style>
+        .error {
+            color: red;
+        }
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="J-comnents"></div>
+
+<p><textarea name="" id="" cols="80" rows="5"></textarea></p>
+<p><button>评论</button></p>
+<script type="text/javascript" src="../../lib/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../lib/ejs.js"></script>
+<script type="text/javascript" src="../../js/wine.js"></script>
+<script type="text/template" class="J-comment-template">
+    <% var len = comments.length; %>
+    <h1>评论区</h1>
+    <p>当前评论:<span><%= len %></span></p>
+    <ul class="J-comnents">    
+    <% if (!len) { %>
+        <li>暂无评论</li>    
+    <% } else { %>
+        <% for (var i = 0; i < len; i ++ ) { %>
+            <li><%= comments[i] %></li>
+        <% } %>
+    <% } %>
+    </ul>
+</script>
+<script type="text/javascript">
+    $(function(){
+        
+        // 封装成Wine对象
+        var commentsPresenter = $('.J-comnents')
+        .wine()
+        .setTemplate({ text : $('.J-comment-template').html() })
+        .value({
+            comments : [],
+        })
+        .render();
+
+        var $textarea = $('textarea');
+        $('button').click(function(){
+            var value = $textarea.val();
+            if (!value.length) {
+                return alert('评论不能为空');
+            }
+            commentsPresenter.data.comments.push(value);
+            commentsPresenter.render();
+            $textarea.val('');
+        });
+    });
+</script>
+</body>
+</html>
