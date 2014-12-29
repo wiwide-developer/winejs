@@ -135,11 +135,8 @@ class Wine
         changeBind.call @
     
     # 模版设置
-    setTemplate: (option) ->
-        if option.text
-            @template = new EJS {text: option.text}
-        else if option.url
-            @template = new EJS {url: option.url}
+    setTemplate: (text) ->
+        @template = text
         @
     
     # 验证规则设置 {name:'tag name', rule:/\d/, checked:false, success:fn, fail:fn}
@@ -231,7 +228,7 @@ class Wine
             # ...
         # 渲染之前先给wine-bind元素赋值
         $div = $('<div></div>')
-        $div.html @template.render @data
+        $div.html ejs.render(@template,@data)
         valueBindElements $div,self.data
         @parent.empty().append $div.children()        
         _elements = self.bindElements = {}

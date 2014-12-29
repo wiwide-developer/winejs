@@ -185,16 +185,8 @@ Daniel.Liu
       changeBind.call(this);
     }
 
-    Wine.prototype.setTemplate = function(option) {
-      if (option.text) {
-        this.template = new EJS({
-          text: option.text
-        });
-      } else if (option.url) {
-        this.template = new EJS({
-          url: option.url
-        });
-      }
+    Wine.prototype.setTemplate = function(text) {
+      this.template = text;
       return this;
     };
 
@@ -310,7 +302,7 @@ Daniel.Liu
         e = _error;
       }
       $div = $('<div></div>');
-      $div.html(this.template.render(this.data));
+      $div.html(ejs.render(this.template, this.data));
       valueBindElements($div, self.data);
       this.parent.empty().append($div.children());
       _elements = self.bindElements = {};

@@ -20,7 +20,9 @@
 <script type="text/javascript" src="../../lib/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="../../lib/ejs.js"></script>
 <script type="text/javascript" src="../../js/wine.js"></script>
-<script type="text/template" class="J-comment-template">
+<script type="text/template" class="j-template">
+<div>
+    <h2><%= hello %></h2>  
     <% var len = comments.length; %>
     <h1>评论区</h1>
     <p>当前评论:<span><%= len %></span></p>
@@ -33,6 +35,7 @@
         <% } %>
     <% } %>
     </ul>
+</div>
 </script>
 <script type="text/javascript">
     $(function(){
@@ -40,9 +43,10 @@
         // 封装成Wine对象
         var commentsPresenter = $('.J-comnents')
         .wine()
-        .setTemplate({ text : $('.J-comment-template').html() })
+        .setTemplate($('.j-template').html())
         .value({
             comments : [],
+            hello : '\<script\>alert(0)\</script\>' 
         })
         .render();
 
