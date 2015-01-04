@@ -1,7 +1,7 @@
 # 使用Wine.js让你的前端项目保持简单
 
 
-## What?
+## 认识Wine.js
 
 Wine.js是一款用于建立用户界面的javascript库.
 
@@ -9,7 +9,7 @@ __基于jQuery__:在使用js框架的网站中有91.7%选择了jQuery，Wine.js�
 
 __EJS模版__:考虑到EJS模版简单的使用方法以及可以通过URL引入，Wine.js采用EJS模版，它在Node.js平台中也大为流行。
 
-## Why?
+## Wine.js的作用
 
 使用简单，学习曲线平滑。
 
