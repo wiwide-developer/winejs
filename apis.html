@@ -48,12 +48,11 @@
 <p>Wine的init函数,会在第一次渲染之前执行</p>
 <pre><code class="lang-javascript"><span class="hljs-keyword">var</span> presenter = $(dom).wine(init);
 </code></pre>
-<h3 id="settemplate-text-text-url-url-">setTemplate({text:text, url:url})</h3>
+<h3 id="settemplate-template-html-">setTemplate(&#39;template HTML&#39;)</h3>
 <p>设置EJS模版</p>
-<p><strong>参数(二选一):</strong></p>
-<p>text : EJS模版内容</p>
-<p>url : EJS模版路径</p>
-<pre><code class="lang-javascript"><span class="hljs-tag">presenter</span><span class="hljs-class">.setTemplate</span>({ <span class="hljs-attribute">text </span>: text , <span class="hljs-attribute">url </span>: url})
+<p><strong>参数(必选):</strong></p>
+<p>参数为模版文本</p>
+<pre><code class="lang-javascript">presenter.setTemplate('<span class="hljs-keyword">template</span> <span class="hljs-type">HTML</span>')
 </code></pre>
 <h3 id="value-data-">value(data)</h3>
 <p>给Wine对象赋值,可以通过 presenter.data 访问</p>
@@ -112,9 +111,9 @@
 <li>value:表单元素触发change事件之后的值</li>
 <li>path:attribute相对于presenter中data对象的路径</li>
 </ul>
-<pre><code class="lang-javascript">presenter.binding({
-    attribute : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(argu)</span></span>{
-        <span class="hljs-built_in">console</span>.log(argu);
+<pre><code class="lang-javascript"><span class="hljs-tag">presenter</span><span class="hljs-class">.binding</span>({
+    <span class="hljs-tag">attribute</span> : <span class="hljs-tag">function</span>(argu){
+        <span class="hljs-attribute">console</span>.<span class="hljs-function">log</span>(argu);
         <span class="hljs-comment">//    { </span>
         <span class="hljs-comment">//        $obj : element,</span>
         <span class="hljs-comment">//        old : old,</span>
@@ -129,7 +128,7 @@
 <p>给Wine-bind表单元素解绑，参数为字符串或者数组</p>
 <p><strong>参数(必选):</strong></p>
 <p>对应binding参数中的attributeName</p>
-<pre><code class="lang-javascript">presenter.unbinding(<span class="hljs-string">'name'</span>);
+<pre><code class="lang-javascript"><span class="hljs-attribute">presenter</span>.<span class="hljs-function">unbinding</span>(<span class="hljs-string">'name'</span>);
 </code></pre>
 <h3 id="setvalidate-">setValidate()</h3>
 <p>设置验证规则</p>
@@ -157,9 +156,9 @@
 presenter
 .validate(<span class="hljs-string">'name'</span>);
 </code></pre>
-<pre><code class="lang-javascript">// 按顺序验证全部验证规则，验证成功则调用验证规则中success函数并返回<span class="hljs-built_in">true</span>，否则调用第一个验证失败的<span class="hljs-built_in">fail</span>函数且返回<span class="hljs-built_in">false</span>
+<pre><code class="lang-javascript">// 按顺序验证全部验证规则，验证成功则调用验证规则中success函数并返回<span class="hljs-literal">true</span>，否则调用第一个验证失败的fail函数且返回<span class="hljs-literal">false</span>
 presenter
-.validate();
+.validate()<span class="hljs-comment">;</span>
 </code></pre>
 <h3 id="watch-eventname-callback-">watch({eventName:callback})</h3>
 <p>订阅事件</p>
@@ -168,7 +167,7 @@ presenter
 <p>类型:json</p>
 <p>eventName:订阅事件名,支持通配符&#39;*&#39;</p>
 <p>callback:指定事件回调函数,如果在trigger时传递了数据可以在callback函数中获取到</p>
-<pre><code class="lang-javascript">presenter.watch({<span class="hljs-string">'eventName'</span><span class="hljs-symbol">:callback</span>});
+<pre><code class="lang-javascript"><span class="hljs-tag">presenter</span><span class="hljs-class">.watch</span>({'<span class="hljs-attribute">eventName</span>':callback});
 </code></pre>
 <h3 id="detach">detach</h3>
 <p>取消订阅</p>
@@ -176,7 +175,7 @@ presenter
 <p>格式:[event, event1 ...]</p>
 <p>类型:数组</p>
 <p>已经订阅过的事件名</p>
-<pre><code class="lang-javascript">presenter.detach([<span class="hljs-string">'eventName'</span>,<span class="hljs-string">'eventName1'</span>]);
+<pre><code class="lang-javascript"><span class="hljs-attribute">presenter</span>.<span class="hljs-function">detach</span>([<span class="hljs-string">'eventName'</span>,<span class="hljs-string">'eventName1'</span>]);
 </code></pre>
 <h2 id="-">工具函数</h2>
 <h3 id="-wine-extend-presenter-element-">$.Wine.extend(presenter, $element);</h3>

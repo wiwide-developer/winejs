@@ -17,18 +17,16 @@ var presenter = $(dom).wine(init);
 ```
 
 
-### setTemplate({text:text, url:url})
+### setTemplate('template HTML')
 
 设置EJS模版
 
-__参数(二选一):__
+__参数(必选):__
 
-text : EJS模版内容
-
-url : EJS模版路径
+参数为模版文本
 
 ```javascript
-presenter.setTemplate({ text : text , url : url})
+presenter.setTemplate('template HTML')
 ```
 
 ### value(data)
