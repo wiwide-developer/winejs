@@ -76,7 +76,7 @@ validateSingle = (k, v, data, context, elements) ->
     if (k.indexOf('$') >= 0)
         _k = k.replace(/\$/g,'\\d+').replace(/\./g,'\\.')
         _reg = new RegExp(_k)
-        for item,key in elements
+        for key,item of elements
             if _reg.test(key) && !validateSingle(key, v, data, context, item)
                 return false
         return true

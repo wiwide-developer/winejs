@@ -108,12 +108,12 @@ Daniel.Liu
   };
 
   validateSingle = function(k, v, data, context, elements) {
-    var item, key, _arr, _data, _i, _j, _k, _len, _len1, _reg;
+    var item, key, _arr, _data, _i, _k, _len, _reg;
     _data = data;
     if (k.indexOf('$') >= 0) {
       _k = k.replace(/\$/g, '\\d+').replace(/\./g, '\\.');
       _reg = new RegExp(_k);
-      for (key = _i = 0, _len = elements.length; _i < _len; key = ++_i) {
+      for (key in elements) {
         item = elements[key];
         if (_reg.test(key) && !validateSingle(key, v, data, context, item)) {
           return false;
@@ -122,8 +122,8 @@ Daniel.Liu
       return true;
     } else {
       _arr = k.split('.');
-      for (_j = 0, _len1 = _arr.length; _j < _len1; _j++) {
-        item = _arr[_j];
+      for (_i = 0, _len = _arr.length; _i < _len; _i++) {
+        item = _arr[_i];
         _data = _data[item];
       }
       if (!v.rule.test(_data)) {
