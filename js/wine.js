@@ -76,7 +76,7 @@ Daniel.Liu
           _data[v] = getElementVal($obj, scope.parent);
           _name = getBindStr(str);
           if (scope.validateActions[_name]) {
-            scope.validateActions[_name].call(scope, _name);
+            scope.validateActions[_name].call(scope, _name, $obj);
           }
           if (scope.actions[_name]) {
             _results.push(scope.actions[_name].call(scope, {
