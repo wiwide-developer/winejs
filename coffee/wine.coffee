@@ -55,7 +55,7 @@ syncViewModel = (scope, $obj, str) ->
                 _name = getBindStr str
                 # 调用validate actions
                 if scope.validateActions[_name]
-                    scope.validateActions[_name].call scope, _name, $obj
+                    scope.validateActions[_name].call scope, _name
 
                 # 调用bindAction绑定的函数
                 if scope.actions[_name]
